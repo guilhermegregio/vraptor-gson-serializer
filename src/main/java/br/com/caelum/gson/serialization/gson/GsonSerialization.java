@@ -21,7 +21,6 @@ public class GsonSerialization implements JSONSerialization {
     protected final Gson mapper;
     private boolean withoutRoot;
 
-    @SuppressWarnings("deprecation")
     public GsonSerialization(HttpServletResponse response) {
         this.response = response;
         this.withoutRoot = false;
