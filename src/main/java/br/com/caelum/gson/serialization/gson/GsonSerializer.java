@@ -21,27 +21,33 @@ import br.com.caelum.vraptor.serialization.Serializer;
 import br.com.caelum.vraptor.serialization.SerializerBuilder;
 import br.com.caelum.vraptor.view.ResultException;
 
-import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 public class GsonSerializer implements SerializerBuilder {
 
-    private final Gson mapper;
-    private final NamedTreeNode treeFields;
+	private GsonBuilder gsonBuilder;
+
+	private final NamedTreeNode treeFields;
     private final Writer writer;
     private Class<?> rootClass;
     private Object object;
     private boolean recursive = false;
     private boolean withoutRoot = false;
-    
-    public GsonSerializer(Writer writer, Gson mapper) {
-        this.writer = writer;
-        this.treeFields = new NamedTreeNode(null, null);
-        this.mapper = mapper;
-    }
 
-    public GsonSerializer(Writer writer, Gson mapper, boolean withoutRoot) {
-        this(writer, mapper);
+
+    public GsonSerializer(Writer writer, boolean indented, boolean withoutRoot) {
+    	this.writer = writer;
+    	this.treeFields = new NamedTreeNode(null, null);
+          
+    	GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat("yyyy-MM-dd");
+    	
+    	if(indented) {
+    		gsonBuilder.setPrettyPrinting();
+    	}
+        
         this.withoutRoot = withoutRoot;
+        
+        this.gsonBuilder = gsonBuilder;
     }
 
     @SuppressWarnings("unchecked")
@@ -167,9 +173,13 @@ public class GsonSerializer implements SerializerBuilder {
         return arrayNodes;
     }
 
+    
+    // O vraptor nao permite que serialize nulls pela api padrao, manteremos a variavel
+    //por compatibilidade de codigo com o fabio. Porem ela eh desnecessaria, pois no GsonBuilder podemos configurar
+    // para que os nulls nao sejam serializados, sobreescrevendo assim o comportamento
     @SuppressWarnings({ "unchecked" })
     protected Map<String, Object> serialize(Map<String, Object> jsonNode, NamedTreeNode root, Object value) {
-        boolean allowNull = true;//mapper.getSerializationConfig().getSerializationInclusion() != JsonSerialize.Inclusion.NON_NULL;
+        boolean allowNull = false;
         for (NamedTreeNode node : root.getChilds()) {
             if (node.containsChilds()) {
                 Entry<Field, Object> entry = field(node.getName(), value.getClass(), value);
@@ -241,7 +251,7 @@ public class GsonSerializer implements SerializerBuilder {
         }
 
         try {
-        	writer.write(mapper.toJson(rootNode));
+        	writer.write(gsonBuilder.create().toJson(rootNode));
         	writer.flush();
         	writer.close();
         } catch (Exception e) {
