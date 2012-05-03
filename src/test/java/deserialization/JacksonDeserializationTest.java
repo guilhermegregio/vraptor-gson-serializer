@@ -12,12 +12,12 @@ import java.io.InputStream;
 
 import model.Order;
 import model.Product;
-import net.gregio.testjackson.deserialization.JacksonDeserialization;
 
 
 import org.junit.Before;
 import org.junit.Test;
 
+import br.com.caelum.gson.deserialization.JacksonDeserialization;
 import br.com.caelum.vraptor.http.ParameterNameProvider;
 import br.com.caelum.vraptor.resource.DefaultResourceClass;
 import br.com.caelum.vraptor.resource.DefaultResourceMethod;

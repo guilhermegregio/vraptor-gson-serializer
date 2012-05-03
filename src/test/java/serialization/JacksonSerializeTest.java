@@ -24,11 +24,12 @@ import model.Group;
 import model.HardDisk;
 import model.Order;
 import model.Product;
-import net.gregio.testjackson.serialization.JacksonSerialization;
 
 import org.apache.commons.codec.binary.Base64;
 import org.junit.Before;
 import org.junit.Test;
+
+import br.com.caelum.gson.serialization.JacksonSerialization;
 
 public class JacksonSerializeTest {
 
