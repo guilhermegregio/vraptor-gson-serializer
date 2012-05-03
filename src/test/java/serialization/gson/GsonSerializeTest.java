@@ -42,7 +42,6 @@ public class GsonSerializeTest {
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     private String currentDateAsStr;
     private Date currentDate;
-    private Gson gson;
 
     @Before
     public void setup() throws Exception {
@@ -52,7 +51,6 @@ public class GsonSerializeTest {
         this.gsonSerialization = new GsonSerialization(response);
         this.currentDate = new Date();
         this.currentDateAsStr = sdf.format(currentDate);
-        this.gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
     }
 
     private String jsonResult() {

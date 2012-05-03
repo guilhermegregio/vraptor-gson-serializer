@@ -169,7 +169,7 @@ public class GsonSerializer implements SerializerBuilder {
 
     @SuppressWarnings({ "unchecked" })
     protected Map<String, Object> serialize(Map<String, Object> jsonNode, NamedTreeNode root, Object value) {
-        boolean allowNull = true;//mapper.getSerializationConfig().getSerializationInclusion() != JsonSerialize.Inclusion.NON_NULL;
+        boolean allowNull = false;//mapper.getSerializationConfig().getSerializationInclusion() != JsonSerialize.Inclusion.NON_NULL;
         for (NamedTreeNode node : root.getChilds()) {
             if (node.containsChilds()) {
                 Entry<Field, Object> entry = field(node.getName(), value.getClass(), value);
