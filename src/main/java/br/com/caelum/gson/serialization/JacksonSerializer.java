@@ -70,6 +70,8 @@ public class JacksonSerializer implements SerializerBuilder {
         return fieldName;
     }
 
+    // melhor mudar este metodo para isPojo. Pois condicionais como !isNonPojo sao ruins de ler:
+    // nao eh um nao pojo :s
     private static boolean isNonPojo(Class<?> type) {
         return type.isPrimitive() || type.isEnum() || Number.class.isAssignableFrom(type) || type.equals(String.class)
                 || Date.class.isAssignableFrom(type) || Calendar.class.isAssignableFrom(type)
@@ -280,6 +282,8 @@ public class JacksonSerializer implements SerializerBuilder {
             treeFields.setName(alias);
         }
 
+        // esta condicional está sendo duplicada na linha acima, melhorar isto
+        // colocando esta condicional e a condicional alias == null dentro desta
         if (object != null) {
             rootClass = getTypeOf(object);
             
