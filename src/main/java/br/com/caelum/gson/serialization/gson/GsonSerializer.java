@@ -201,11 +201,6 @@ public class GsonSerializer implements SerializerBuilder {
         return jsonNode;
     }
 
-    public GsonSerializer withoutRoot() {
-        this.withoutRoot = true;
-        return this;
-    }
-
     @SuppressWarnings("unchecked")
     public void serialize() {
     	Map<String, Object> rootNode = new HashMap<>();

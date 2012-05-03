@@ -198,11 +198,6 @@ public class JacksonSerializer implements SerializerBuilder {
         }
     }
 
-    public JacksonSerializer withoutRoot() {
-        this.withoutRoot = true;
-        return this;
-    }
-
     @SuppressWarnings("unchecked")
     public void serialize() {
         ObjectNode rootNode = mapper.createObjectNode();
