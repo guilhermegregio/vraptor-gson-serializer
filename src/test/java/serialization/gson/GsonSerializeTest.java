@@ -31,9 +31,6 @@ import org.junit.Test;
 
 import br.com.caelum.gson.serialization.gson.GsonSerialization;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 public class GsonSerializeTest {
 
     private ByteArrayOutputStream output;
