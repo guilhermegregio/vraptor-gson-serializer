@@ -213,7 +213,7 @@ public class GsonSerializeTest {
 
     @Test
     public void shouldSerializeIndented() {
-        String expectedResult = "{\n	\"product\" : {\n	\"id\" : 1,\n	\"creationDate\" : \"" + currentDateAsStr + "\",\n	\"name\" : \"Product 1\",\n	\"group\" : {\n	\"id\" : 1,\n	\"name\" : \"Group 1\"\n	}\n	}\n}";
+        String expectedResult = "{\n  \"product\": {\n    \"id\": 1,\n    \"creationDate\": \"" + currentDateAsStr + "\",\n    \"name\": \"Product 1\",\n    \"group\": {\n      \"id\": 1,\n      \"name\": \"Group 1\"\n    }\n  }\n}";
 
         Group group = new Group(1L, "Group 1");
         Product product = new Product(1L, "Product 1", currentDate, group);
