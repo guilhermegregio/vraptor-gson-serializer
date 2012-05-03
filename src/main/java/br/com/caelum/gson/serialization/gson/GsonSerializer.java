@@ -32,7 +32,6 @@ public class GsonSerializer implements SerializerBuilder {
     private Object object;
     private boolean recursive = false;
     private boolean withoutRoot = false;
-    private List<Map<String, Object>> arrayNodes = new ArrayList<>();
     
     public GsonSerializer(Writer writer, Gson mapper) {
         this.writer = writer;
@@ -209,7 +208,7 @@ public class GsonSerializer implements SerializerBuilder {
 
     @SuppressWarnings("unchecked")
     public void serialize() {
-    	Map<String, Object> rootNode = new HashMap<String, Object>();
+    	Map<String, Object> rootNode = new HashMap<>();
     	
         if (object != null) {
             if (recursive) {
@@ -225,13 +224,13 @@ public class GsonSerializer implements SerializerBuilder {
 
                 rootNode.put(treeFields.getName(), serializeCollection(arrayNode, treeFields, collection));
             } else if (!isNonPojo(rootClass)) {
-                Map<String, Object> dataRoot = new HashMap<>();
-                dataRoot.put(treeFields.getName(), rootNode);
                 if(withoutRoot){
-                	rootNode = dataRoot;
+                	serialize(rootNode, treeFields, object);
+                } else {
+                	Map<String, Object> temp = new HashMap<>();
+                	temp.put(treeFields.getName(), serialize(rootNode, treeFields, object));
+                	rootNode = temp;
                 }
-                
-                serialize(rootNode, treeFields, object);
             } else {
                 if (withoutRoot) {
                     rootNode.put("", object);

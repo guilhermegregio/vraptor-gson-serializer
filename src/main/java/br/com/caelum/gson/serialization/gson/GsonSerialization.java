@@ -24,7 +24,7 @@ public class GsonSerialization implements JSONSerialization {
     public GsonSerialization(HttpServletResponse response) {
         this.response = response;
         this.withoutRoot = false;
-        mapper = new GsonBuilder().serializeNulls().create();
+        mapper = new GsonBuilder().create();
         
         /*
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
