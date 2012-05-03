@@ -17,65 +17,65 @@ import com.google.gson.GsonBuilder;
 @Component
 public class GsonSerialization implements JSONSerialization {
 
-    private final HttpServletResponse response;
-    protected final Gson mapper;
-    private boolean withoutRoot;
-    
-    private GsonBuilder gsonBuilder;
+	private final HttpServletResponse response;
 
-    public GsonSerialization(HttpServletResponse response) {
-        this.response = response;
-        this.withoutRoot = false;
-        
-        gsonBuilder = new GsonBuilder();
-        gsonBuilder.setDateFormat("yyyy-MM-dd");
-        
-        mapper = gsonBuilder.create();
-        
-        /*
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        mapper.setDateFormat(sdf);
-        */
-    }
+	protected final Gson mapper;
 
-    @Override
-    public boolean accepts(String format) {
-        return "json".equals(format);
-    }
+	private boolean withoutRoot;
 
-    @Override
-    public <T> Serializer from(T object) {
-        return from(object, null);
-    }
+	private boolean indented;
 
-    @Override
-    public <T> Serializer from(T object, String alias) {
-        response.setContentType("application/json");
-        return getSerializer().from(object, alias);
-    }
+	private GsonBuilder gsonBuilder;
 
-    @Override
-    public <T> NoRootSerialization withoutRoot() {
-        this.withoutRoot = true;
-        return this;
-    }
+	public GsonSerialization(HttpServletResponse response) {
+		this.response = response;
+		this.withoutRoot = false;
 
-    @Override
-    public JSONSerialization indented() {
-        //mapper.configure(SerializationConfig.Feature.INDENT_OUTPUT, true);
-        return this;
-    }
+		gsonBuilder = new GsonBuilder();
+		gsonBuilder.setDateFormat("yyyy-MM-dd");
 
-    protected Gson getObjectMapper() {
-        return mapper;
-    }
+		mapper = gsonBuilder.create();
 
-    protected SerializerBuilder getSerializer() {
-        try {
-            return new GsonSerializer(response.getWriter(), mapper, withoutRoot);
-        } catch (IOException e) {
-            throw new ResultException("Unable to serialize data", e);
-        }
-    }
+		/*
+		 * SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		 * mapper.setDateFormat(sdf);
+		 */
+	}
+
+	@Override
+	public boolean accepts(String format) {
+		return "json".equals(format);
+	}
+
+	@Override
+	public <T> Serializer from(T object) {
+		return from(object, null);
+	}
+
+	@Override
+	public <T> Serializer from(T object, String alias) {
+		response.setContentType("application/json");
+		return getSerializer().from(object, alias);
+	}
+
+	@Override
+	public <T> NoRootSerialization withoutRoot() {
+		this.withoutRoot = true;
+		return this;
+	}
+
+	@Override
+	public JSONSerialization indented() {
+		indented = true;
+		return this;
+	}
+
+	protected SerializerBuilder getSerializer() {
+		try {
+			return new GsonSerializer(response.getWriter(), mapper, withoutRoot);
+		} catch (IOException e) {
+			throw new ResultException("Unable to serialize data", e);
+		}
+	}
 
 }
