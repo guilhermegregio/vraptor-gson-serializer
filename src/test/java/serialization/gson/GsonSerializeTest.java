@@ -42,7 +42,6 @@ public class GsonSerializeTest {
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     private String currentDateAsStr;
     private Date currentDate;
-    private Gson gson;
 
     @Before
     public void setup() throws Exception {
@@ -52,7 +51,6 @@ public class GsonSerializeTest {
         this.gsonSerialization = new GsonSerialization(response);
         this.currentDate = new Date();
         this.currentDateAsStr = sdf.format(currentDate);
-        this.gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
     }
 
     private String jsonResult() {
@@ -72,25 +70,13 @@ public class GsonSerializeTest {
         product.setGroup(createGroup(idGroup));
         return product;
     }
-    /*
-    @Test
-    public void shouldSerializePojo() {
-        String expectedResult = "{\"product\":{\"id\":1,\"name\":\"Product 1\",\"creationDate\":\"" + currentDateAsStr
-                + "\"}}";
-        
-        Product product = createProduct(1L);
 
-        gsonSerialization.from(Arrays.asList(product, product)).serialize();
-        
-        //gsonSerialization.from(product).serialize();
-        
-        System.out.println(jsonResult());
-    }
-    */
     @Test
     public void shouldSerializePojo() {
-        String expectedResult = "{\"product\":{\"id\":1,\"name\":\"Product 1\",\"creationDate\":\"" + currentDateAsStr
-                + "\"}}";
+    	
+    	
+        String expectedResult = "{\"product\":{\"id\":1,\"creationDate\":\"" + currentDateAsStr + "\",\"name\":\"Product 1\"}}";
+        
         Product product = createProduct(1L);
 
         gsonSerialization.from(product).serialize();
@@ -112,8 +98,7 @@ public class GsonSerializeTest {
 
     @Test
     public void shouldUseAlias() {
-        String expectedResult = "{\"myProduct\":{\"id\":1,\"name\":\"Product 1\",\"creationDate\":\""
-                + currentDateAsStr + "\"}}";
+    	String expectedResult = "{\"myProduct\":{\"id\":1,\"creationDate\":\"" + currentDateAsStr + "\",\"name\":\"Product 1\"}}";
         Product product = createProduct(1L);
 
         gsonSerialization.from(product, "myProduct").serialize();
@@ -146,8 +131,7 @@ public class GsonSerializeTest {
 
     @Test
     public void shouldIncludeField() {
-        String expectedResult = "{\"product\":{\"id\":1,\"name\":\"Product 1\",\"creationDate\":\"" + currentDateAsStr
-                + "\",\"group\":{\"id\":1,\"name\":\"Group 1\"}}}";
+        String expectedResult = "{\"product\":{\"id\":1,\"creationDate\":\"" + currentDateAsStr + "\",\"name\":\"Product 1\",\"group\":{\"id\":1,\"name\":\"Group 1\"}}}";
 
         Product product = createProductWithGroup(1L, 1L);
 
@@ -157,6 +141,7 @@ public class GsonSerializeTest {
 
     @Test
     public void shouldIncludeFieldFromCollection() {
+
         String expectedResult = "{\"order\":{\"id\":1,\"products\":[{\"id\":1,\"name\":\"Product 1\",\"creationDate\":\""
                 + currentDateAsStr
                 + "\",\"group\":{\"id\":1,\"name\":\"Group 1\"}},{\"id\":2,\"name\":\"Product 2\",\"creationDate\":\""
@@ -172,7 +157,7 @@ public class GsonSerializeTest {
 
     @Test
     public void shouldSerializeParentFields() {
-        String expectedResult = "{\"hardDisk\":{\"capacity\":2987000009,\"id\":1,\"name\":\"Samsumg ZTX A9000\"}}";
+        String expectedResult = "{\"hardDisk\":{\"id\":1,\"name\":\"Samsumg ZTX A9000\",\"capacity\":2987000009}}";
 
         HardDisk hd = new HardDisk(1L, "Samsumg ZTX A9000", 2987000009L);
 
@@ -182,7 +167,7 @@ public class GsonSerializeTest {
 
     @Test
     public void shouldExcludeParentField() {
-        String expectedResult = "{\"hardDisk\":{\"capacity\":2987000009,\"name\":\"Samsumg ZTX A9000\"}}";
+        String expectedResult = "{\"hardDisk\":{\"name\":\"Samsumg ZTX A9000\",\"capacity\":2987000009}}";
 
         HardDisk hd = new HardDisk(1L, "Samsumg ZTX A9000", 2987000009L);
 
@@ -192,8 +177,8 @@ public class GsonSerializeTest {
 
     @Test
     public void shouldExcludeField() {
-        String expectedResult = "{\"product\":{\"id\":1,\"name\":\"Product 1\",\"creationDate\":\"" + currentDateAsStr
-                + "\",\"group\":{\"name\":\"Group 1\"}}}";
+    	
+        String expectedResult = "{\"product\":{\"id\":1,\"creationDate\":\"" + currentDateAsStr + "\",\"name\":\"Product 1\",\"group\":{\"name\":\"Group 1\"}}}";
 
         Group group = new Group(1L, "Group 1");
         Product product = new Product(1L, "Product 1", currentDate, group);
@@ -204,11 +189,9 @@ public class GsonSerializeTest {
 
     @Test
     public void shouldExcudeHierarchicalField() {
-        String expectedResult = "{\"order\":{\"id\":1,\"customer\":{\"id\":1,\"name\":\"Franco\"},"
-                + "\"delivery\":{\"street\":\"delivery street\",\"city\":\"Bristol\",\"zipCode\":\"09887990\"},"
-                + "\"products\":[{\"id\":1,\"name\":\"Product 1\",\"creationDate\":\"" + currentDateAsStr
-                + "\",\"group\":{\"name\":\"Group 1\"}},{\"id\":2,\"name\":\"Product 2\",\"creationDate\":\""
-                + currentDateAsStr + "\",\"group\":{\"name\":\"Group 2\"}}]}}";
+    	
+    	
+        String expectedResult = "{\"order\":{\"id\":1,\"delivery\":{\"zipCode\":\"09887990\",\"street\":\"delivery street\",\"city\":\"Bristol\"},\"customer\":{\"id\":1,\"name\":\"Franco\"},\"products\":[{\"id\":2,\"creationDate\":\"" + currentDateAsStr + "\",\"name\":\"Product 2\",\"group\":{\"name\":\"Group 2\"}},{\"id\":2,\"creationDate\":\"" + currentDateAsStr + "\",\"name\":\"Product 2\",\"group\":{\"name\":\"Group 2\"}}]}}";
 
         Order order = new Order(1L, new Customer(1L, "Franco", new Address("rua", "cidade", "9800989")), new Address(
                 "delivery street", "Bristol", "09887990"));
@@ -222,8 +205,7 @@ public class GsonSerializeTest {
 
     @Test
     public void shouldSerializeWithouRoot() {
-        String expectedResult = "{\"id\":1,\"name\":\"Product 1\",\"creationDate\":\"" + currentDateAsStr
-                + "\",\"group\":{\"name\":\"Group 1\"}}";
+        String expectedResult = "{\"id\":1,\"creationDate\":\"" + currentDateAsStr + "\",\"name\":\"Product 1\",\"group\":{\"name\":\"Group 1\"}}";
 
         Group group = new Group(1L, "Group 1");
         Product product = new Product(1L, "Product 1", currentDate, group);
@@ -234,9 +216,7 @@ public class GsonSerializeTest {
 
     @Test
     public void shouldSerializeIndented() {
-        String expectedResult = "{\n  \"product\" : {\n    \"id\" : 1,\n    \"name\" : \"Product 1\",\n    \"creationDate\" : \""
-                + currentDateAsStr
-                + "\",\n    \"group\" : {\n      \"id\" : 1,\n      \"name\" : \"Group 1\"\n    }\n  }\n}";
+        String expectedResult = "{\n	\"product\" : {\n	\"id\" : 1,\n	\"creationDate\" : \"" + currentDateAsStr + "\",\n	\"name\" : \"Product 1\",\n	\"group\" : {\n	\"id\" : 1,\n	\"name\" : \"Group 1\"\n	}\n	}\n}";
 
         Group group = new Group(1L, "Group 1");
         Product product = new Product(1L, "Product 1", currentDate, group);
@@ -247,8 +227,7 @@ public class GsonSerializeTest {
 
     @Test
     public void shouldSerializeObjectAttribute() {
-        String expectedResult = "{\"product\":{\"id\":1,\"name\":\"Product 1\",\"creationDate\":\"" + currentDateAsStr
-                + "\",\"data\":\"data object for product\"}}";
+        String expectedResult = "{\"product\":{\"id\":1,\"creationDate\":\"" + currentDateAsStr + "\",\"name\":\"Product 1\",\"data\":\"data object for product\"}}";
 
         Product product = new Product(1L, "Product 1", currentDate);
         product.setData("data object for product");
