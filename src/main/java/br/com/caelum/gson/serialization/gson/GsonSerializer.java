@@ -187,19 +187,14 @@ public class GsonSerializer implements SerializerBuilder {
 
 					jsonNode.put(entry.getKey().getName(), serializeCollection(node, collection));
 				} else {
-					if (fieldValue != null || (fieldValue == null)) {
-						Map<String, Object> objectNode = new HashMap<String, Object>();
-						jsonNode.put(entry.getKey().getName(), objectNode);
-						serialize(objectNode, node, fieldValue);
-					}
+					Map<String, Object> objectNode = new HashMap<String, Object>();
+					jsonNode.put(entry.getKey().getName(), objectNode);
+					serialize(objectNode, node, fieldValue);
 				}
 			} else {
 				Entry<Field, Object> entry = field(node.getName(), value.getClass(), value);
 				Object fieldValue = entry.getValue();
-
-				if (fieldValue != null || (fieldValue == null)) {
-					jsonNode.put(entry.getKey().getName(), fieldValue);
-				}
+				jsonNode.put(entry.getKey().getName(), fieldValue);
 			}
 		}
 		return jsonNode;
