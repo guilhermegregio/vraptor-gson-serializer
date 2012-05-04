@@ -81,10 +81,10 @@ public class GsonSerializeTest {
 
 	@Test
 	public void shouldSerializeCollectionOfPojo() {
-		String expectedResult = "{\"productList\":[{\"id\":1,\"name\":\"Product 1\",\"creationDate\":\""
-				+ currentDateAsStr
-				+ "\"},{\"id\":2,\"name\":\"Product 2\",\"creationDate\":\""
-				+ currentDateAsStr + "\"}]}";
+		String expectedResult = "{\"productList\":[{\"id\":1,\"creationDate\":\""
+				+ currentDateAsStr + "\",\"name\":\"Product 1\"},{\"id\":2,\"creationDate\":\""
+				+ currentDateAsStr + "\",\"name\":\"Product 2\"}]}";
+
 		List<Product> products = new ArrayList<Product>();
 		products.add(createProduct(1L));
 		products.add(createProduct(2L));
@@ -140,10 +140,11 @@ public class GsonSerializeTest {
 
 	@Test
 	public void shouldIncludeFieldFromCollection() {
-		String expectedResult = "{\"order\":{\"id\":1,\"products\":[{\"id\":1,\"name\":\"Product 1\",\"creationDate\":\""
+		String expectedResult = "{\"order\":{\"id\":1,\"products\":[{\"id\":1,\"creationDate\":\""
 				+ currentDateAsStr
-				+ "\",\"group\":{\"id\":1,\"name\":\"Group 1\"}},{\"id\":2,\"name\":\"Product 2\",\"creationDate\":\""
-				+ currentDateAsStr + "\",\"group\":{\"id\":2,\"name\":\"Group 2\"}}]}}";
+				+ "\",\"name\":\"Product 1\",\"group\":{\"id\":1,\"name\":\"Group 1\"}},{\"id\":2,\"creationDate\":\""
+				+ currentDateAsStr
+				+ "\",\"name\":\"Product 2\",\"group\":{\"id\":2,\"name\":\"Group 2\"}}]}}";
 
 		Order order = new Order(1L, new Customer(1L, "Franco", new Address("rua", "cidade",
 				"9800989")));
@@ -188,9 +189,9 @@ public class GsonSerializeTest {
 
 	@Test
 	public void shouldExcudeHierarchicalField() {
-		String expectedResult = "{\"order\":{\"id\":1,\"delivery\":{\"zipCode\":\"09887990\",\"street\":\"delivery street\",\"city\":\"Bristol\"},\"customer\":{\"id\":1,\"name\":\"Franco\"},\"products\":[{\"id\":2,\"creationDate\":\""
+		String expectedResult = "{\"order\":{\"id\":1,\"delivery\":{\"zipCode\":\"09887990\",\"street\":\"delivery street\",\"city\":\"Bristol\"},\"customer\":{\"id\":1,\"name\":\"Franco\"},\"products\":[{\"id\":1,\"creationDate\":\""
 				+ currentDateAsStr
-				+ "\",\"name\":\"Product 2\",\"group\":{\"name\":\"Group 2\"}},{\"id\":2,\"creationDate\":\""
+				+ "\",\"name\":\"Product 1\",\"group\":{\"name\":\"Group 1\"}},{\"id\":2,\"creationDate\":\""
 				+ currentDateAsStr
 				+ "\",\"name\":\"Product 2\",\"group\":{\"name\":\"Group 2\"}}]}}";
 
