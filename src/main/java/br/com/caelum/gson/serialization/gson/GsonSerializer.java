@@ -78,7 +78,7 @@ public class GsonSerializer implements SerializerBuilder {
 		return fieldName;
 	}
 
-	private static boolean isNonPojo(Class<?> type) {
+	private static boolean isPrimitive(Class<?> type) {
 		return type.isPrimitive() || type.isEnum() || Number.class.isAssignableFrom(type) || type.equals(String.class)
 				|| Date.class.isAssignableFrom(type) || Calendar.class.isAssignableFrom(type)
 				|| Boolean.class.equals(type) || Character.class.equals(type) || Map.class.isAssignableFrom(type)
@@ -96,7 +96,7 @@ public class GsonSerializer implements SerializerBuilder {
 
 	protected void includePrimitiveFields(Class<?> clazz, String root) {
 		for (Field field : new Mirror().on(clazz).reflectAll().fields()) {
-			if (isNonPojo(field.getType())) {
+			if (isPrimitive(field.getType())) {
 				String fieldPath = (root != null) ? root + "." + field.getName() : field.getName();
 				addField(fieldPath);
 			}
@@ -160,7 +160,7 @@ public class GsonSerializer implements SerializerBuilder {
 		Entry<Field, Object> fieldEntry = field(fieldName, rootClass);
 
 		Class<?> fieldType = getFieldType(fieldEntry.getKey());
-		if (!isNonPojo(fieldType)) {
+		if (!isPrimitive(fieldType)) {
 			includePrimitiveFields(fieldType, fieldName);
 		} else {
 			treeFields.addChild(fieldName);
@@ -175,15 +175,8 @@ public class GsonSerializer implements SerializerBuilder {
 		return arrayNodes;
 	}
 
-	// O vraptor nao permite que serialize nulls pela api padrao, manteremos a
-	// variavel
-	// por compatibilidade de codigo com o fabio. Porem ela eh desnecessaria,
-	// pois no GsonBuilder podemos configurar
-	// para que os nulls nao sejam serializados, sobreescrevendo assim o
-	// comportamento
 	@SuppressWarnings({ "unchecked" })
 	protected Map<String, Object> serialize(Map<String, Object> jsonNode, NamedTreeNode root, Object value) {
-		boolean allowNull = false;
 		for (NamedTreeNode node : root.getChilds()) {
 			if (node.containsChilds()) {
 				Entry<Field, Object> entry = field(node.getName(), value.getClass(), value);
@@ -194,19 +187,14 @@ public class GsonSerializer implements SerializerBuilder {
 
 					jsonNode.put(entry.getKey().getName(), serializeCollection(node, collection));
 				} else {
-					if (fieldValue != null || (fieldValue == null && allowNull)) {
-						Map<String, Object> objectNode = new HashMap<String, Object>();
-						jsonNode.put(entry.getKey().getName(), objectNode);
-						serialize(objectNode, node, fieldValue);
-					}
+					Map<String, Object> objectNode = new HashMap<String, Object>();
+					jsonNode.put(entry.getKey().getName(), objectNode);
+					serialize(objectNode, node, fieldValue);
 				}
 			} else {
 				Entry<Field, Object> entry = field(node.getName(), value.getClass(), value);
 				Object fieldValue = entry.getValue();
-
-				if (fieldValue != null || (fieldValue == null && allowNull)) {
-					jsonNode.put(entry.getKey().getName(), fieldValue);
-				}
+				jsonNode.put(entry.getKey().getName(), fieldValue);
 			}
 		}
 		return jsonNode;
@@ -223,11 +211,11 @@ public class GsonSerializer implements SerializerBuilder {
 				} else {
 					rootNode.put(treeFields.getName(), object);
 				}
-			} else if (Collection.class.isAssignableFrom(object.getClass()) && !isNonPojo(rootClass)) {
+			} else if (Collection.class.isAssignableFrom(object.getClass()) && !isPrimitive(rootClass)) {
 				Collection<Object> collection = (Collection<Object>) object;
 
 				rootNode.put(treeFields.getName(), serializeCollection(treeFields, collection));
-			} else if (!isNonPojo(rootClass)) {
+			} else if (!isPrimitive(rootClass)) {
 				if (withoutRoot) {
 					serialize(rootNode, treeFields, object);
 				} else {
@@ -301,7 +289,7 @@ public class GsonSerializer implements SerializerBuilder {
 		if (object != null) {
 			rootClass = getTypeOf(object);
 
-			if (!isNonPojo(rootClass)) {
+			if (!isPrimitive(rootClass)) {
 				includePrimitiveFields(rootClass, null);
 			}
 		} else {
