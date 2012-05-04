@@ -64,6 +64,7 @@ public class GsonSerializer implements SerializerBuilder {
         return obj.getClass();
     }
 
+    // verificar se no vraptor ele coloca o "s" 
     private static String getFieldName(Class<?> type) {
         String fieldName = type.getSimpleName();
         if (fieldName == null || "".equals(fieldName)) {
@@ -168,7 +169,7 @@ public class GsonSerializer implements SerializerBuilder {
     protected List<Map<String, Object>> serializeCollection(Map<String, Object> arrayNode, NamedTreeNode node, Collection<Object> collection) {
     	List<Map<String, Object>> arrayNodes = new ArrayList<>();
     	for (Object o : collection) {
-            arrayNodes.add(serialize(arrayNode, node, o));
+            arrayNodes.add(serialize(new HashMap<String, Object>(), node, o));
         }
         return arrayNodes;
     }
