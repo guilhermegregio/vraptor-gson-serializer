@@ -78,7 +78,7 @@ public class GsonSerializer implements SerializerBuilder {
 		return fieldName;
 	}
 
-	private static boolean isNonPojo(Class<?> type) {
+	private static boolean isPrimitive(Class<?> type) {
 		return type.isPrimitive() || type.isEnum() || Number.class.isAssignableFrom(type) || type.equals(String.class)
 				|| Date.class.isAssignableFrom(type) || Calendar.class.isAssignableFrom(type)
 				|| Boolean.class.equals(type) || Character.class.equals(type) || Map.class.isAssignableFrom(type)
@@ -96,7 +96,7 @@ public class GsonSerializer implements SerializerBuilder {
 
 	protected void includePrimitiveFields(Class<?> clazz, String root) {
 		for (Field field : new Mirror().on(clazz).reflectAll().fields()) {
-			if (isNonPojo(field.getType())) {
+			if (isPrimitive(field.getType())) {
 				String fieldPath = (root != null) ? root + "." + field.getName() : field.getName();
 				addField(fieldPath);
 			}
@@ -160,7 +160,7 @@ public class GsonSerializer implements SerializerBuilder {
 		Entry<Field, Object> fieldEntry = field(fieldName, rootClass);
 
 		Class<?> fieldType = getFieldType(fieldEntry.getKey());
-		if (!isNonPojo(fieldType)) {
+		if (!isPrimitive(fieldType)) {
 			includePrimitiveFields(fieldType, fieldName);
 		} else {
 			treeFields.addChild(fieldName);
@@ -216,11 +216,11 @@ public class GsonSerializer implements SerializerBuilder {
 				} else {
 					rootNode.put(treeFields.getName(), object);
 				}
-			} else if (Collection.class.isAssignableFrom(object.getClass()) && !isNonPojo(rootClass)) {
+			} else if (Collection.class.isAssignableFrom(object.getClass()) && !isPrimitive(rootClass)) {
 				Collection<Object> collection = (Collection<Object>) object;
 
 				rootNode.put(treeFields.getName(), serializeCollection(treeFields, collection));
-			} else if (!isNonPojo(rootClass)) {
+			} else if (!isPrimitive(rootClass)) {
 				if (withoutRoot) {
 					serialize(rootNode, treeFields, object);
 				} else {
@@ -294,7 +294,7 @@ public class GsonSerializer implements SerializerBuilder {
 		if (object != null) {
 			rootClass = getTypeOf(object);
 
-			if (!isNonPojo(rootClass)) {
+			if (!isPrimitive(rootClass)) {
 				includePrimitiveFields(rootClass, null);
 			}
 		} else {
