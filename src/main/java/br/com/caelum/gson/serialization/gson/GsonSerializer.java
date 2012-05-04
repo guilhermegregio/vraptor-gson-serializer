@@ -175,15 +175,8 @@ public class GsonSerializer implements SerializerBuilder {
 		return arrayNodes;
 	}
 
-	// O vraptor nao permite que serialize nulls pela api padrao, manteremos a
-	// variavel
-	// por compatibilidade de codigo com o fabio. Porem ela eh desnecessaria,
-	// pois no GsonBuilder podemos configurar
-	// para que os nulls nao sejam serializados, sobreescrevendo assim o
-	// comportamento
 	@SuppressWarnings({ "unchecked" })
 	protected Map<String, Object> serialize(Map<String, Object> jsonNode, NamedTreeNode root, Object value) {
-		boolean allowNull = false;
 		for (NamedTreeNode node : root.getChilds()) {
 			if (node.containsChilds()) {
 				Entry<Field, Object> entry = field(node.getName(), value.getClass(), value);
@@ -194,7 +187,7 @@ public class GsonSerializer implements SerializerBuilder {
 
 					jsonNode.put(entry.getKey().getName(), serializeCollection(node, collection));
 				} else {
-					if (fieldValue != null || (fieldValue == null && allowNull)) {
+					if (fieldValue != null || (fieldValue == null)) {
 						Map<String, Object> objectNode = new HashMap<String, Object>();
 						jsonNode.put(entry.getKey().getName(), objectNode);
 						serialize(objectNode, node, fieldValue);
@@ -204,7 +197,7 @@ public class GsonSerializer implements SerializerBuilder {
 				Entry<Field, Object> entry = field(node.getName(), value.getClass(), value);
 				Object fieldValue = entry.getValue();
 
-				if (fieldValue != null || (fieldValue == null && allowNull)) {
+				if (fieldValue != null || (fieldValue == null)) {
 					jsonNode.put(entry.getKey().getName(), fieldValue);
 				}
 			}
