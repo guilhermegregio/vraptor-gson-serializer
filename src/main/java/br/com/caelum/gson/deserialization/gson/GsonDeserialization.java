@@ -3,11 +3,7 @@ package br.com.caelum.gson.deserialization.gson;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
-import java.text.SimpleDateFormat;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.DeserializationConfig;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,6 +12,12 @@ import br.com.caelum.vraptor.deserialization.Deserializes;
 import br.com.caelum.vraptor.http.ParameterNameProvider;
 import br.com.caelum.vraptor.resource.ResourceMethod;
 import br.com.caelum.vraptor.view.ResultException;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 @Deserializes({ "application/json", "json" })
 public class GsonDeserialization implements Deserializer {
@@ -37,20 +39,22 @@ public class GsonDeserialization implements Deserializer {
 					"Methods that consumes representations must receive just one argument");
 		}
 
-		ObjectMapper mapper = getObjectMapper();
+		Gson gson = getGson();
 		Object[] params = new Object[types.length];
 		String[] parameterNames = paramNameProvider.parameterNamesFor(jMethod);
 
 		try {
 			String content = getContentOfStream(inputStream);
 			logger.debug("json retrieved: " + content);
-			JsonNode root = mapper.readTree(content);
-
+			
+			JsonParser parser = new JsonParser();
+			JsonObject root = (JsonObject)parser.parse(content);
+			
 			for (int i = 0; i < types.length; i++) {
 				String name = parameterNames[i];
-				JsonNode node = root.get(name);
+				JsonElement node = root.get(name);
 				if (node != null) {
-					params[i] = mapper.readValue(node, types[i]);
+					params[i] = gson.fromJson(node, types[i]);
 				}
 			}
 		} catch (Exception e) {
@@ -60,17 +64,11 @@ public class GsonDeserialization implements Deserializer {
 		return params;
 	}
 
-	protected ObjectMapper getObjectMapper() {
-		ObjectMapper mapper = new ObjectMapper();
-		mapper = new ObjectMapper();
-		mapper.configure(DeserializationConfig.Feature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true);
-		mapper.configure(DeserializationConfig.Feature.FAIL_ON_NULL_FOR_PRIMITIVES, false);
-		mapper.configure(DeserializationConfig.Feature.READ_ENUMS_USING_TO_STRING, true);
+	protected Gson getGson() {
 
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		mapper.setDateFormat(sdf);
-
-		return mapper;
+		GsonBuilder gsonBuilder = new GsonBuilder();
+		
+		return gsonBuilder.create();
 	}
 
 	private String getContentOfStream(InputStream input) throws IOException {
