@@ -34,10 +34,15 @@ import br.com.caelum.gson.serialization.gson.GsonSerialization;
 public class GsonSerializeTest {
 
 	private ByteArrayOutputStream output;
+
 	private HttpServletResponse response;
+
 	private GsonSerialization gsonSerialization;
+
 	private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
 	private String currentDateAsStr;
+
 	private Date currentDate;
 
 	@Before
@@ -81,9 +86,9 @@ public class GsonSerializeTest {
 
 	@Test
 	public void shouldSerializeCollectionOfPojo() {
-		String expectedResult = "{\"productList\":[{\"id\":1,\"creationDate\":\""
-				+ currentDateAsStr + "\",\"name\":\"Product 1\"},{\"id\":2,\"creationDate\":\""
-				+ currentDateAsStr + "\",\"name\":\"Product 2\"}]}";
+		String expectedResult = "{\"productList\":[{\"id\":1,\"creationDate\":\"" + currentDateAsStr
+				+ "\",\"name\":\"Product 1\"},{\"id\":2,\"creationDate\":\"" + currentDateAsStr
+				+ "\",\"name\":\"Product 2\"}]}";
 
 		List<Product> products = new ArrayList<Product>();
 		products.add(createProduct(1L));
@@ -140,14 +145,11 @@ public class GsonSerializeTest {
 
 	@Test
 	public void shouldIncludeFieldFromCollection() {
-		String expectedResult = "{\"order\":{\"id\":1,\"products\":[{\"id\":1,\"creationDate\":\""
-				+ currentDateAsStr
+		String expectedResult = "{\"order\":{\"id\":1,\"products\":[{\"id\":1,\"creationDate\":\"" + currentDateAsStr
 				+ "\",\"name\":\"Product 1\",\"group\":{\"id\":1,\"name\":\"Group 1\"}},{\"id\":2,\"creationDate\":\""
-				+ currentDateAsStr
-				+ "\",\"name\":\"Product 2\",\"group\":{\"id\":2,\"name\":\"Group 2\"}}]}}";
+				+ currentDateAsStr + "\",\"name\":\"Product 2\",\"group\":{\"id\":2,\"name\":\"Group 2\"}}]}}";
 
-		Order order = new Order(1L, new Customer(1L, "Franco", new Address("rua", "cidade",
-				"9800989")));
+		Order order = new Order(1L, new Customer(1L, "Franco", new Address("rua", "cidade", "9800989")));
 		order.addProduct(createProductWithGroup(1L, 1L));
 		order.addProduct(createProductWithGroup(2L, 2L));
 
@@ -192,11 +194,10 @@ public class GsonSerializeTest {
 		String expectedResult = "{\"order\":{\"id\":1,\"delivery\":{\"zipCode\":\"09887990\",\"street\":\"delivery street\",\"city\":\"Bristol\"},\"customer\":{\"id\":1,\"name\":\"Franco\"},\"products\":[{\"id\":1,\"creationDate\":\""
 				+ currentDateAsStr
 				+ "\",\"name\":\"Product 1\",\"group\":{\"name\":\"Group 1\"}},{\"id\":2,\"creationDate\":\""
-				+ currentDateAsStr
-				+ "\",\"name\":\"Product 2\",\"group\":{\"name\":\"Group 2\"}}]}}";
+				+ currentDateAsStr + "\",\"name\":\"Product 2\",\"group\":{\"name\":\"Group 2\"}}]}}";
 
-		Order order = new Order(1L, new Customer(1L, "Franco", new Address("rua", "cidade",
-				"9800989")), new Address("delivery street", "Bristol", "09887990"));
+		Order order = new Order(1L, new Customer(1L, "Franco", new Address("rua", "cidade", "9800989")), new Address(
+				"delivery street", "Bristol", "09887990"));
 		order.addProduct(createProductWithGroup(1L, 1L));
 		order.addProduct(createProductWithGroup(2L, 2L));
 
@@ -213,8 +214,7 @@ public class GsonSerializeTest {
 		Group group = new Group(1L, "Group 1");
 		Product product = new Product(1L, "Product 1", currentDate, group);
 
-		gsonSerialization.withoutRoot().from(product).include("group").exclude("group.id")
-				.serialize();
+		gsonSerialization.withoutRoot().from(product).include("group").exclude("group.id").serialize();
 		assertThat(jsonResult(), is(equalTo(expectedResult)));
 	}
 
