@@ -68,16 +68,13 @@ public class GsonSerializer implements SerializerBuilder {
 		return obj.getClass();
 	}
 
-	// verificar se no vraptor ele coloca o "s"
 	private static String getFieldName(Class<?> type) {
 		String fieldName = type.getSimpleName();
 		if (fieldName == null || "".equals(fieldName)) {
 			return null;
 		}
 		fieldName = Character.toLowerCase(fieldName.charAt(0)) + fieldName.substring(1);
-		if (isCollection(type)) {
-			fieldName += "s";
-		}
+
 		return fieldName;
 	}
 
