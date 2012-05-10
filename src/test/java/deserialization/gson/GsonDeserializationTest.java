@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.Locale;
 
 import model.Order;
 import model.Product;
@@ -17,6 +18,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import br.com.caelum.gson.deserialization.gson.GsonDeserialization;
+import br.com.caelum.vraptor.core.Localization;
 import br.com.caelum.vraptor.http.ParameterNameProvider;
 import br.com.caelum.vraptor.resource.DefaultResourceClass;
 import br.com.caelum.vraptor.resource.DefaultResourceMethod;
@@ -25,6 +27,7 @@ public class GsonDeserializationTest {
 
 	private GsonDeserialization deserializer;
 	private ParameterNameProvider provider;
+	private Localization localization;
 	private DefaultResourceMethod list;
 	private DefaultResourceMethod listLimit;
 	private DefaultResourceMethod add;
@@ -33,7 +36,9 @@ public class GsonDeserializationTest {
 	@Before
 	public void setup() throws Exception {
 		provider = mock(ParameterNameProvider.class);
-		deserializer = new GsonDeserialization(provider);
+		localization = mock(Localization.class);
+		when(localization.getLocale()).thenReturn(new Locale("pt","BR"));
+		deserializer = new GsonDeserialization(provider, localization);
 
 		DefaultResourceClass resourceClass = new DefaultResourceClass(OrderController.class);
 

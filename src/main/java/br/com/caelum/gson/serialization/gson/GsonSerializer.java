@@ -5,6 +5,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -12,6 +14,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -39,11 +42,12 @@ public class GsonSerializer implements SerializerBuilder {
 
 	private boolean withoutRoot = false;
 
-	public GsonSerializer(Writer writer, boolean indented, boolean withoutRoot) {
+	public GsonSerializer(Writer writer, boolean indented, boolean withoutRoot, Locale locale) {
 		this.writer = writer;
 		this.treeFields = new NamedTreeNode(null, null);
 
-		GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat("yyyy-MM-dd");
+		String pattern = ((SimpleDateFormat)DateFormat.getDateInstance(DateFormat.MEDIUM,locale)).toLocalizedPattern();
+		GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat(pattern);
 
 		if (indented) {
 			gsonBuilder.setPrettyPrinting();

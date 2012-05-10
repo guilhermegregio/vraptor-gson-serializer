@@ -1,6 +1,7 @@
 package br.com.caelum.gson.serialization.gson;
 
 import java.io.IOException;
+import java.util.Locale;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -55,7 +56,7 @@ public class GsonSerialization implements JSONSerialization {
 
 	protected SerializerBuilder getSerializer() {
 		try {
-			return new GsonSerializer(response.getWriter(), indented, withoutRoot);
+			return new GsonSerializer(response.getWriter(), indented, withoutRoot, response.getLocale());
 		} catch (IOException e) {
 			throw new ResultException("Unable to serialize data", e);
 		}

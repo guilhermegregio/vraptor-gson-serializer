@@ -3,10 +3,13 @@ package br.com.caelum.gson.deserialization.gson;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import br.com.caelum.vraptor.core.Localization;
 import br.com.caelum.vraptor.deserialization.Deserializer;
 import br.com.caelum.vraptor.deserialization.Deserializes;
 import br.com.caelum.vraptor.http.ParameterNameProvider;
@@ -26,8 +29,11 @@ public class GsonDeserialization implements Deserializer {
 
 	private final ParameterNameProvider paramNameProvider;
 
-	public GsonDeserialization(ParameterNameProvider paramNameProvider) {
+	private Localization localization;
+	
+	public GsonDeserialization(ParameterNameProvider paramNameProvider, Localization localization) {
 		this.paramNameProvider = paramNameProvider;
+		this.localization = localization;
 	}
 
 	@Override
@@ -46,10 +52,10 @@ public class GsonDeserialization implements Deserializer {
 		try {
 			String content = getContentOfStream(inputStream);
 			logger.debug("json retrieved: " + content);
-			
+
 			JsonParser parser = new JsonParser();
-			JsonObject root = (JsonObject)parser.parse(content);
-			
+			JsonObject root = (JsonObject) parser.parse(content);
+
 			for (int i = 0; i < types.length; i++) {
 				String name = parameterNames[i];
 				JsonElement node = root.get(name);
@@ -66,7 +72,10 @@ public class GsonDeserialization implements Deserializer {
 
 	protected Gson getGson() {
 
-		GsonBuilder gsonBuilder = new GsonBuilder();
+		String pattern = ((SimpleDateFormat) DateFormat.getDateInstance(DateFormat.MEDIUM, localization.getLocale()))
+				.toLocalizedPattern();
+		
+		GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat(pattern);
 		
 		return gsonBuilder.create();
 	}

@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
@@ -39,7 +40,7 @@ public class GsonSerializeTest {
 
 	private GsonSerialization gsonSerialization;
 
-	private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+	private final SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
 	private String currentDateAsStr;
 
@@ -50,6 +51,8 @@ public class GsonSerializeTest {
 		this.output = new ByteArrayOutputStream();
 		this.response = mock(HttpServletResponse.class);
 		when(response.getWriter()).thenReturn(new PrintWriter(output));
+		when(response.getLocale()).thenReturn(new Locale("pt", "BR"));
+
 		this.gsonSerialization = new GsonSerialization(response);
 		this.currentDate = new Date();
 		this.currentDateAsStr = sdf.format(currentDate);
