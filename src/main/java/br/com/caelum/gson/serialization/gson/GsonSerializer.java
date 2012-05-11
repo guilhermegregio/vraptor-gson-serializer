@@ -48,7 +48,8 @@ public class GsonSerializer implements SerializerBuilder {
 
 		String pattern = ((SimpleDateFormat)DateFormat.getDateInstance(DateFormat.MEDIUM,locale)).toLocalizedPattern();
 		GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat(pattern);
-
+		gsonBuilder.registerTypeAdapter(byte[].class, new ConverterByteArray());
+		
 		if (indented) {
 			gsonBuilder.setPrettyPrinting();
 		}
@@ -143,7 +144,11 @@ public class GsonSerializer implements SerializerBuilder {
 			}
 			if (value != null) {
 				try {
-					lastValue = new Mirror().on(lastValue).invoke().getterFor(lastField.getName());
+					//Pegando atributo independente se o mesmo é publico ou privado.
+					lastValue = new Mirror().on(lastValue).get().field(lastField.getName());
+					
+					//lastValue = new Mirror().on(lastValue).invoke().getterFor(lastField.getName());
+
 				} catch (Exception e) {
 					throw new ResultException("Unable to retrieve the value of field: " + fieldName, e);
 				}
