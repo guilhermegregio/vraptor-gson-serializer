@@ -46,10 +46,12 @@ public class GsonSerializer implements SerializerBuilder {
 		this.writer = writer;
 		this.treeFields = new NamedTreeNode(null, null);
 
-		String pattern = ((SimpleDateFormat)DateFormat.getDateInstance(DateFormat.MEDIUM,locale)).toLocalizedPattern();
-		GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat(pattern);
+		String pattern = ((SimpleDateFormat) DateFormat.getDateInstance(DateFormat.MEDIUM, locale))
+				.toLocalizedPattern();
+		GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat(pattern).serializeNulls();
+
 		gsonBuilder.registerTypeAdapter(byte[].class, new ConverterByteArray());
-		
+
 		if (indented) {
 			gsonBuilder.setPrettyPrinting();
 		}
@@ -144,10 +146,12 @@ public class GsonSerializer implements SerializerBuilder {
 			}
 			if (value != null) {
 				try {
-					//Pegando atributo independente se o mesmo é publico ou privado.
+					// Pegando atributo independente se o mesmo é publico ou
+					// privado.
 					lastValue = new Mirror().on(lastValue).get().field(lastField.getName());
-					
-					//lastValue = new Mirror().on(lastValue).invoke().getterFor(lastField.getName());
+
+					// lastValue = new
+					// Mirror().on(lastValue).invoke().getterFor(lastField.getName());
 
 				} catch (Exception e) {
 					throw new ResultException("Unable to retrieve the value of field: " + fieldName, e);
@@ -193,7 +197,6 @@ public class GsonSerializer implements SerializerBuilder {
 
 				if (fieldValue != null && Collection.class.isAssignableFrom(fieldValue.getClass())) {
 					Collection<Object> collection = (Collection<Object>) entry.getValue();
-
 					jsonNode.put(entry.getKey().getName(), serializeCollection(node, collection));
 				} else {
 					Map<String, Object> objectNode = new HashMap<String, Object>();
@@ -203,7 +206,12 @@ public class GsonSerializer implements SerializerBuilder {
 			} else {
 				Entry<Field, Object> entry = field(node.getName(), value.getClass(), value);
 				Object fieldValue = entry.getValue();
-				jsonNode.put(entry.getKey().getName(), fieldValue);
+				if (isPrimitive(entry.getKey().getType())) {
+					jsonNode.put(entry.getKey().getName(), fieldValue);
+				} else {
+					jsonNode.put(entry.getKey().getName(), null);
+				}
+
 			}
 		}
 		return jsonNode;
