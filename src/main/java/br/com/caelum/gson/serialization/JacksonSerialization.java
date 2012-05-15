@@ -31,6 +31,8 @@ public class JacksonSerialization implements JSONSerialization {
         mapper.configure(SerializationConfig.Feature.WRITE_DATES_AS_TIMESTAMPS, false);
         mapper.configure(SerializationConfig.Feature.INDENT_OUTPUT, false);
         mapper.configure(SerializationConfig.Feature.WRITE_NULL_MAP_VALUES, false);
+        mapper.configure(SerializationConfig.Feature.FAIL_ON_EMPTY_BEANS, false);
+        
         mapper.getSerializationConfig().setSerializationInclusion(Inclusion.NON_NULL);
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");

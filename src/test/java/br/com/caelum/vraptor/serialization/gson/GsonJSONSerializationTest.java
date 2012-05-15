@@ -300,10 +300,12 @@ public class GsonJSONSerializationTest {
 	@Test
 	public void shouldOptionallyExcludeChildField() {
 //		String expectedResult = "<order><client></client>  <price>15.0</price><comments>pack it nicely, please</comments></order>";
-		Order order = new Order(new Client("guilherme silveira"), 15.0, "pack it nicely, please");
-		serialization.from(order).include("client").exclude("client.name").serialize();
+		Order order = new Order(new Client("guilherme silveira", new Address("Rua abc")), 15.0, "pack it nicely, please");
+		
+		serialization.from(order).include("client").include("client.address").exclude("client.address.street").serialize();
 		assertThat(result(), containsString("\"client\""));
 		assertThat(result(), not(containsString("guilherme silveira")));
+		System.out.println(result());
 	}
 
 	@Test
