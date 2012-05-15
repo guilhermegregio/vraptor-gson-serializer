@@ -276,7 +276,7 @@ public class JacksonSerializer implements SerializerBuilder {
             Class<?> type = getTypeOf(object);
             String name = getFieldName(type);
             if (isCollection(object.getClass())) {
-                name = name + "List";
+                name = "list";
             }
             treeFields.setName(name);
         } else {
