@@ -295,7 +295,7 @@ public class GsonJSONSerializationTest {
 				"pack it nicely, please");
 
 		serialization.from(order).include("client").exclude("client.name").serialize();
-		assertThat(result(), containsString("\"client\""));
+		assertThat(result(), not(containsString("guilherme")));
 		assertThat(result(), not(containsString("guilherme silveira")));
 	}
 

@@ -207,8 +207,7 @@ public class GsonSerializer implements SerializerBuilder {
 			} else {
 				Entry<Field, Object> entry = field(node.getName(), value.getClass(), value);
 				Object fieldValue = entry.getValue();
-
-				if (fieldValue != null) {
+				if (isPrimitive(entry.getKey().getType()) && fieldValue != null) {
 					jsonNode.put(entry.getKey().getName(), fieldValue);
 				}
 			}
