@@ -411,10 +411,6 @@ public class GsonJSONSerializationTest {
 	@Test
 	public void verificaIncludeQuandoRaizCollection(){
 		List<Order> orders = new ArrayList<>();
-		Order order = new Order(new Client("guilherme silveira"), 15.0, "pack it nicely, please", new Item("any item",12.99));
-		
-		orders = Collections.EMPTY_LIST;
-		
 		serialization.from(orders).include("client").include("items").serialize();
 		System.out.println(result());
 	}

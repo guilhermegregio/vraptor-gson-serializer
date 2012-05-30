@@ -11,7 +11,6 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -172,12 +171,8 @@ public class GsonSerializer implements SerializerBuilder {
 			return;
 		}
 
-		Class<?> declaringClass = rootClass.getDeclaringClass();
-
-		// é necessário usar generics nas collections para funcionar =/ 
-		//quando for collection e collection nao estiver vazia ou quando nao for collection
-		if ((declaringClass != null && declaringClass.isAssignableFrom(Collections.class) && !((Collection<?>) object)
-				.isEmpty()) || declaringClass == null) {
+		if ((Collection.class.isAssignableFrom(rootClass) && !((Collection<?>) object).isEmpty())
+				|| !Collection.class.isAssignableFrom(rootClass)) {
 			Entry<Field, Object> fieldEntry = field(fieldName, rootClass);
 
 			Class<?> fieldType = getFieldType(fieldEntry.getKey());
@@ -265,11 +260,7 @@ public class GsonSerializer implements SerializerBuilder {
 		}
 
 		try {
-			if (withoutRoot) {
-				writer.write(gsonBuilder.create().toJson(rootNode.get(treeFields.getName())));
-			} else {
-				writer.write(gsonBuilder.create().toJson(rootNode));
-			}
+			writer.write(gsonBuilder.create().toJson(rootNode));
 			writer.flush();
 			writer.close();
 		} catch (Exception e) {
@@ -332,5 +323,4 @@ public class GsonSerializer implements SerializerBuilder {
 
 }
 
-// TODO Method serialize remover withoutRoot nas condições e inserir somente no
-// writer
+// TODO quando serializo collections ele ignora o withouroot
