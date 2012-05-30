@@ -85,10 +85,12 @@ public class GsonSerializer implements SerializerBuilder {
 	}
 
 	private static boolean isPrimitive(Class<?> type) {
-		return type.isPrimitive() || type.isEnum() || Number.class.isAssignableFrom(type) || type.equals(String.class)
-				|| Date.class.isAssignableFrom(type) || Calendar.class.isAssignableFrom(type)
-				|| Boolean.class.equals(type) || Character.class.equals(type) || Map.class.isAssignableFrom(type)
-				|| Object.class.equals(type) || (type.isArray() && type.getComponentType().equals(Byte.TYPE));
+		return type.isPrimitive() || type.isEnum() || Number.class.isAssignableFrom(type)
+				|| type.equals(String.class) || Date.class.isAssignableFrom(type)
+				|| Calendar.class.isAssignableFrom(type) || Boolean.class.equals(type)
+				|| Character.class.equals(type) || Map.class.isAssignableFrom(type)
+				|| Object.class.equals(type)
+				|| (type.isArray() && type.getComponentType().equals(Byte.TYPE));
 	}
 
 	private static boolean isCollection(Type type) {
@@ -153,7 +155,8 @@ public class GsonSerializer implements SerializerBuilder {
 					// Mirror().on(lastValue).invoke().getterFor(lastField.getName());
 
 				} catch (Exception e) {
-					throw new ResultException("Unable to retrieve the value of field: " + fieldName, e);
+					throw new ResultException(
+							"Unable to retrieve the value of field: " + fieldName, e);
 				}
 			}
 			clazz = getFieldType(lastField);
@@ -179,7 +182,8 @@ public class GsonSerializer implements SerializerBuilder {
 		}
 	}
 
-	protected List<Map<String, Object>> serializeCollection(NamedTreeNode node, Collection<Object> collection) {
+	protected List<Map<String, Object>> serializeCollection(NamedTreeNode node,
+			Collection<Object> collection) {
 		List<Map<String, Object>> arrayNodes = new ArrayList<>();
 		for (Object o : collection) {
 			arrayNodes.add(serialize(new HashMap<String, Object>(), node, o));
@@ -188,7 +192,8 @@ public class GsonSerializer implements SerializerBuilder {
 	}
 
 	@SuppressWarnings({ "unchecked" })
-	protected Map<String, Object> serialize(Map<String, Object> jsonNode, NamedTreeNode root, Object value) {
+	protected Map<String, Object> serialize(Map<String, Object> jsonNode, NamedTreeNode root,
+			Object value) {
 		for (NamedTreeNode node : root.getChilds()) {
 			if (node.containsChilds()) {
 				Entry<Field, Object> entry = field(node.getName(), value.getClass(), value);
@@ -226,9 +231,9 @@ public class GsonSerializer implements SerializerBuilder {
 				} else {
 					rootNode.put(treeFields.getName(), object);
 				}
-			} else if (Collection.class.isAssignableFrom(object.getClass()) && !isPrimitive(rootClass)) {
+			} else if (Collection.class.isAssignableFrom(object.getClass())
+					&& !isPrimitive(rootClass)) {
 				Collection<Object> collection = (Collection<Object>) object;
-
 				rootNode.put(treeFields.getName(), serializeCollection(treeFields, collection));
 			} else if (!isPrimitive(rootClass)) {
 				if (withoutRoot) {
@@ -253,7 +258,11 @@ public class GsonSerializer implements SerializerBuilder {
 		}
 
 		try {
-			writer.write(gsonBuilder.create().toJson(rootNode));
+			if (withoutRoot) {
+				writer.write(gsonBuilder.create().toJson(rootNode.get(treeFields.getName())));
+			} else {
+				writer.write(gsonBuilder.create().toJson(rootNode));
+			}
 			writer.flush();
 			writer.close();
 		} catch (Exception e) {
@@ -315,3 +324,5 @@ public class GsonSerializer implements SerializerBuilder {
 	}
 
 }
+
+//TODO Method serialize remover withoutRoot nas condições e inserir somente no writer
