@@ -14,6 +14,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -405,6 +406,17 @@ public class GsonJSONSerializationTest {
 		String expectedResult = "[\"testing\"]";
 		serialization.withoutRoot().from(new MyCollection()).serialize();
 		assertThat(result(), is(equalTo(expectedResult)));
+	}
+	
+	@Test
+	public void verificaIncludeQuandoRaizCollection(){
+		List<Order> orders = new ArrayList<>();
+		Order order = new Order(new Client("guilherme silveira"), 15.0, "pack it nicely, please", new Item("any item",12.99));
+		
+		orders = Collections.EMPTY_LIST;
+		
+		serialization.from(orders).include("client").include("items").serialize();
+		System.out.println(result());
 	}
 
 }

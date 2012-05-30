@@ -11,6 +11,7 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -171,14 +172,20 @@ public class GsonSerializer implements SerializerBuilder {
 			return;
 		}
 
-		// check field
-		Entry<Field, Object> fieldEntry = field(fieldName, rootClass);
+		Class<?> declaringClass = rootClass.getDeclaringClass();
 
-		Class<?> fieldType = getFieldType(fieldEntry.getKey());
-		if (!isPrimitive(fieldType)) {
-			includePrimitiveFields(fieldType, fieldName);
-		} else {
-			treeFields.addChild(fieldName);
+		// é necessário usar generics nas collections para funcionar =/ 
+		//quando for collection e collection nao estiver vazia ou quando nao for collection
+		if ((declaringClass != null && declaringClass.isAssignableFrom(Collections.class) && !((Collection<?>) object)
+				.isEmpty()) || declaringClass == null) {
+			Entry<Field, Object> fieldEntry = field(fieldName, rootClass);
+
+			Class<?> fieldType = getFieldType(fieldEntry.getKey());
+			if (!isPrimitive(fieldType)) {
+				includePrimitiveFields(fieldType, fieldName);
+			} else {
+				treeFields.addChild(fieldName);
+			}
 		}
 	}
 
@@ -325,4 +332,5 @@ public class GsonSerializer implements SerializerBuilder {
 
 }
 
-//TODO Method serialize remover withoutRoot nas condições e inserir somente no writer
+// TODO Method serialize remover withoutRoot nas condições e inserir somente no
+// writer
