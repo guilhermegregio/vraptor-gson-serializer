@@ -64,6 +64,8 @@ public class GsonJSONSerializationTest {
 
 		Address address;
 
+		List<String> emails;
+		
 		public Client(String name) {
 			this.name = name;
 		}
@@ -413,6 +415,16 @@ public class GsonJSONSerializationTest {
 		List<Order> orders = new ArrayList<>();
 		serialization.from(orders).include("client").include("items").serialize();
 		System.out.println(result());
+	}
+	
+	@Test
+	public void verificaColecaoPrimitivos(){
+		Client client = new Client("cliente");
+		client.emails = new ArrayList<>(Arrays.asList("email1", "email2"));
+		
+		serialization.from(client).include("emails").serialize();
+		System.out.println(result());
+		
 	}
 
 }
