@@ -14,6 +14,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -64,7 +65,7 @@ public class GsonJSONSerializationTest {
 		Address address;
 
 		List<String> emails;
-
+		
 		public Client(String name) {
 			this.name = name;
 		}
@@ -408,14 +409,14 @@ public class GsonJSONSerializationTest {
 		serialization.withoutRoot().from(new MyCollection()).serialize();
 		assertThat(result(), is(equalTo(expectedResult)));
 	}
-
+	
 	@Test
-	public void shouldSerializeRootPrimitiveCollection() {
+	public void shouldSerializeAEmptyListWithIncludes(){
 		List<Order> orders = new ArrayList<>();
 		serialization.from(orders).include("client").include("items").serialize();
 		System.out.println(result());
 	}
-
+	
 	@Test
 	public void shouldSerializePrimitiveCollectionAttribute() {
 		Client client = new Client("cliente");
