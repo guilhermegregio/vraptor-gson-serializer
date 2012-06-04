@@ -64,7 +64,7 @@ public class GsonJSONSerializationTest {
 		Address address;
 
 		List<String> emails;
-		
+
 		public Client(String name) {
 			this.name = name;
 		}
@@ -190,7 +190,8 @@ public class GsonJSONSerializationTest {
 
 	@Test
 	public void shouldSerializeEnumFields() {
-		Order order = new BasicOrder(new Client("guilherme silveira"), 15.0, "pack it nicely, please", Type.basic);
+		Order order = new BasicOrder(new Client("guilherme silveira"), 15.0,
+				"pack it nicely, please", Type.basic);
 		serialization.from(order).serialize();
 		String result = result();
 		assertThat(result, containsString("\"type\":\"basic\""));
@@ -220,8 +221,8 @@ public class GsonJSONSerializationTest {
 
 	@Test
 	public void shouldExcludeNonPrimitiveFieldsFromACollection() {
-		Order order = new Order(new Client("guilherme silveira"), 15.0, "pack it nicely, please", new Item("name",
-				12.99));
+		Order order = new Order(new Client("guilherme silveira"), 15.0, "pack it nicely, please",
+				new Item("name", 12.99));
 		serialization.from(Arrays.asList(order, order), "orders").exclude("price").serialize();
 
 		assertThat(result(), not(containsString("\"items\"")));
@@ -236,7 +237,8 @@ public class GsonJSONSerializationTest {
 	public void shouldSerializeCollectionWithPrefixTagAndNamespace() {
 		String expectedResult = "<o:order><o:price>15.0</o:price><o:comments>pack it nicely, please</o:comments></o:order>";
 		expectedResult += expectedResult;
-		expectedResult = "<o:orders xmlns:o=\"http://www.caelum.com.br/order\">" + expectedResult + "</o:orders>";
+		expectedResult = "<o:orders xmlns:o=\"http://www.caelum.com.br/order\">" + expectedResult
+				+ "</o:orders>";
 		assertThat(result(), is(equalTo(expectedResult)));
 	}
 
@@ -254,7 +256,8 @@ public class GsonJSONSerializationTest {
 	@Test
 	public void shouldExcludeNonPrimitiveParentFields() {
 		WithAdvanced advanced = new WithAdvanced();
-		advanced.order = new AdvancedOrder(new Client("john"), 15.0, "pack it nicely, please", "complex package");
+		advanced.order = new AdvancedOrder(new Client("john"), 15.0, "pack it nicely, please",
+				"complex package");
 		serialization.from(advanced).include("order").serialize();
 		assertThat(result(), not(containsString("\"client\"")));
 	}
@@ -276,8 +279,8 @@ public class GsonJSONSerializationTest {
 
 	@Test
 	public void shouldOptionallyIncludeFieldAndNotItsNonPrimitiveFields() {
-		Order order = new Order(new Client("guilherme silveira", new Address("R. Vergueiro")), 15.0,
-				"pack it nicely, please");
+		Order order = new Order(new Client("guilherme silveira", new Address("R. Vergueiro")),
+				15.0, "pack it nicely, please");
 		serialization.from(order).include("client").serialize();
 		assertThat(result(), containsString("\"name\":\"guilherme silveira\""));
 		assertThat(result(), not(containsString("R. Vergueiro")));
@@ -285,8 +288,8 @@ public class GsonJSONSerializationTest {
 
 	@Test
 	public void shouldOptionallyIncludeChildField() {
-		Order order = new Order(new Client("guilherme silveira", new Address("R. Vergueiro")), 15.0,
-				"pack it nicely, please");
+		Order order = new Order(new Client("guilherme silveira", new Address("R. Vergueiro")),
+				15.0, "pack it nicely, please");
 		serialization.from(order).include("client", "client.address").serialize();
 		assertThat(result(), containsString("\"street\":\"R. Vergueiro\""));
 	}
@@ -303,8 +306,8 @@ public class GsonJSONSerializationTest {
 
 	@Test
 	public void shouldOptionallyIncludeListChildFields() {
-		Order order = new Order(new Client("guilherme silveira"), 15.0, "pack it nicely, please", new Item("any item",
-				12.99));
+		Order order = new Order(new Client("guilherme silveira"), 15.0, "pack it nicely, please",
+				new Item("any item", 12.99));
 		serialization.from(order).include("items").serialize();
 		assertThat(result(), containsString("\"items\""));
 		assertThat(result(), containsString("\"name\":\"any item\""));
@@ -313,8 +316,8 @@ public class GsonJSONSerializationTest {
 
 	@Test
 	public void shouldOptionallyExcludeFieldsFromIncludedListChildFields() {
-		Order order = new Order(new Client("guilherme silveira"), 15.0, "pack it nicely, please", new Item("any item",
-				12.99));
+		Order order = new Order(new Client("guilherme silveira"), 15.0, "pack it nicely, please",
+				new Item("any item", 12.99));
 		serialization.from(order).include("items").exclude("items.price").serialize();
 		assertThat(result(), containsString("\"items\""));
 		assertThat(result(), containsString("\"name\":\"any item\""));
@@ -323,8 +326,8 @@ public class GsonJSONSerializationTest {
 
 	@Test
 	public void shouldOptionallyRemoveRoot() {
-		Order order = new Order(new Client("guilherme silveira"), 15.0, "pack it nicely, please", new Item("any item",
-				12.99));
+		Order order = new Order(new Client("guilherme silveira"), 15.0, "pack it nicely, please",
+				new Item("any item", 12.99));
 		serialization.withoutRoot().from(order).include("items").exclude("items.price").serialize();
 		assertThat(result(), containsString("\"items\""));
 		assertThat(result(), containsString("\"name\":\"any item\""));
@@ -335,10 +338,11 @@ public class GsonJSONSerializationTest {
 	@Test
 	public void shouldOptionallyRemoveRootIdented() {
 		String expected = "{\n  \"price\": 15.0,\n  \"items\": [\n    {\n      \"name\": \"any item\"\n    }\n  ],\n  \"comments\": \"pack it nicely, please\"\n}";
-		Order order = new Order(new Client("guilherme silveira"), 15.0, "pack it nicely, please", new Item("any item",
-				12.99));
+		Order order = new Order(new Client("guilherme silveira"), 15.0, "pack it nicely, please",
+				new Item("any item", 12.99));
 
-		serialization.indented().withoutRoot().from(order).include("items").exclude("items.price").serialize();
+		serialization.indented().withoutRoot().from(order).include("items").exclude("items.price")
+				.serialize();
 		assertThat(result(), equalTo(expected));
 	}
 
@@ -408,22 +412,26 @@ public class GsonJSONSerializationTest {
 		serialization.withoutRoot().from(new MyCollection()).serialize();
 		assertThat(result(), is(equalTo(expectedResult)));
 	}
-	
+
 	@Test
-	public void shouldSerializeAEmptyListWithIncludes(){
+	public void shouldSerializeAEmptyListWithIncludes() {
+		String expected = "{\"list\":[]}";
+
 		List<Order> orders = new ArrayList<>();
 		serialization.from(orders).include("client").include("items").serialize();
-		System.out.println(result());
+
+		assertThat(result(), is(expected));
 	}
-	
+
 	@Test
 	public void shouldSerializePrimitiveCollectionAttribute() {
+		String expected = "{\"client\":{\"name\":\"cliente\",\"emails\":[\"email1\",\"email2\"]}}";
+
 		Client client = new Client("cliente");
 		client.emails = Arrays.asList("email1", "email2");
 
 		serialization.from(client).include("emails").serialize();
-		System.out.println(result());
-
+		assertThat(result(), is(expected));
 	}
 
 }
