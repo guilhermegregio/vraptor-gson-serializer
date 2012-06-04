@@ -410,14 +410,14 @@ public class GsonJSONSerializationTest {
 	}
 
 	@Test
-	public void verificaIncludeQuandoRaizCollection() {
+	public void shouldSerializeRootPrimitiveCollection() {
 		List<Order> orders = new ArrayList<>();
 		serialization.from(orders).include("client").include("items").serialize();
 		System.out.println(result());
 	}
 
 	@Test
-	public void verificaColecaoPrimitivos() {
+	public void shouldSerializePrimitiveCollectionAttribute() {
 		Client client = new Client("cliente");
 		client.emails = Arrays.asList("email1", "email2");
 
