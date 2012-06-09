@@ -88,7 +88,7 @@ public class GsonSerializeTest {
 
 	@Test
 	public void shouldSerializeCollectionOfPojo() {
-		String expectedResult = "{\"productList\":[{\"id\":1,\"creationDate\":\"" + currentDateAsStr
+		String expectedResult = "{\"list\":[{\"id\":1,\"creationDate\":\"" + currentDateAsStr
 				+ "\",\"name\":\"Product 1\"},{\"id\":2,\"creationDate\":\"" + currentDateAsStr
 				+ "\",\"name\":\"Product 2\"}]}";
 

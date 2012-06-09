@@ -404,8 +404,6 @@ public class GsonJSONSerializationTest {
 
 	}
 
-	// TODO VERIFICAR ESTE CASO
-	@Ignore
 	@Test
 	public void shouldUseCollectionConverterWhenItExists() {
 		String expectedResult = "[\"testing\"]";

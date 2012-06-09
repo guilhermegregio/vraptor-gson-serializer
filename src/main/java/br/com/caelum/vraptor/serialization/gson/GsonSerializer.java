@@ -89,8 +89,7 @@ public class GsonSerializer implements SerializerBuilder {
 				|| type.equals(String.class) || Date.class.isAssignableFrom(type)
 				|| Calendar.class.isAssignableFrom(type) || Boolean.class.equals(type)
 				|| Character.class.equals(type) || Map.class.isAssignableFrom(type)
-				|| Object.class.equals(type)
-				|| (type.isArray() && type.getComponentType().equals(Byte.TYPE));
+				|| Object.class.equals(type) || (type.isArray() && type.getComponentType().equals(Byte.TYPE));
 	}
 
 	private static boolean isCollection(Type type) {
@@ -155,8 +154,7 @@ public class GsonSerializer implements SerializerBuilder {
 					// Mirror().on(lastValue).invoke().getterFor(lastField.getName());
 
 				} catch (Exception e) {
-					throw new ResultException(
-							"Unable to retrieve the value of field: " + fieldName, e);
+					throw new ResultException("Unable to retrieve the value of field: " + fieldName, e);
 				}
 			}
 			clazz = getFieldType(lastField);
@@ -184,8 +182,7 @@ public class GsonSerializer implements SerializerBuilder {
 		}
 	}
 
-	protected List<Map<String, Object>> serializeCollection(NamedTreeNode node,
-			Collection<Object> collection) {
+	protected List<Map<String, Object>> serializeCollection(NamedTreeNode node, Collection<Object> collection) {
 		List<Map<String, Object>> arrayNodes = new ArrayList<>();
 		for (Object o : collection) {
 			arrayNodes.add(serialize(new HashMap<String, Object>(), node, o));
@@ -194,8 +191,7 @@ public class GsonSerializer implements SerializerBuilder {
 	}
 
 	@SuppressWarnings({ "unchecked" })
-	protected Map<String, Object> serialize(Map<String, Object> jsonNode, NamedTreeNode root,
-			Object value) {
+	protected Map<String, Object> serialize(Map<String, Object> jsonNode, NamedTreeNode root, Object value) {
 		for (NamedTreeNode node : root.getChilds()) {
 			if (node.containsChilds()) {
 				Entry<Field, Object> entry = field(node.getName(), value.getClass(), value);
@@ -214,9 +210,9 @@ public class GsonSerializer implements SerializerBuilder {
 			} else {
 				Entry<Field, Object> entry = field(node.getName(), value.getClass(), value);
 				Object fieldValue = entry.getValue();
-				
+
 				Class<?> type = entry.getKey().getType();
-				
+
 				if ((isPrimitive(type) || isCollection(type)) && fieldValue != null) {
 					jsonNode.put(entry.getKey().getName(), fieldValue);
 				}
@@ -236,8 +232,7 @@ public class GsonSerializer implements SerializerBuilder {
 				} else {
 					rootNode.put(treeFields.getName(), object);
 				}
-			} else if (Collection.class.isAssignableFrom(object.getClass())
-					&& !isPrimitive(rootClass)) {
+			} else if (Collection.class.isAssignableFrom(object.getClass()) && !isPrimitive(rootClass)) {
 				Collection<Object> collection = (Collection<Object>) object;
 				rootNode.put(treeFields.getName(), serializeCollection(treeFields, collection));
 			} else if (!isPrimitive(rootClass)) {
@@ -300,30 +295,37 @@ public class GsonSerializer implements SerializerBuilder {
 	public <T> Serializer from(T object, String alias) {
 		this.object = object;
 
-		if (alias == null && object != null) {
-			Class<?> type = getTypeOf(object);
-			String name = getFieldName(type);
-			if (isCollection(object.getClass())) {
-				name = "list";
-			}
-			treeFields.setName(name);
-		} else {
-			treeFields.setName(alias);
-		}
-
 		if (object != null) {
+
+			if (alias == null) {
+				Class<?> type = getTypeOf(object);
+				String name = getFieldName(type);
+
+				if (isCollection(object.getClass())) {
+					name = "list";
+				}
+
+				treeFields.setName(name);
+			} else {
+				treeFields.setName(alias);
+			}
+
 			rootClass = getTypeOf(object);
 
 			if (!isPrimitive(rootClass)) {
 				includePrimitiveFields(rootClass, null);
 			}
+
 		} else {
+			if (alias != null) {
+				treeFields.setName(alias);
+			}
+
 			rootClass = null;
 		}
 
 		return this;
 	}
-
 }
 
 // TODO quando serializo collections ele ignora o withouroot
