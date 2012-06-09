@@ -25,6 +25,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import br.com.caelum.vraptor.interceptor.DefaultTypeNameExtractor;
 import br.com.caelum.vraptor.serialization.gson.GsonSerialization;
 
 import com.google.common.collect.ForwardingCollection;
@@ -47,7 +48,7 @@ public class GsonJSONSerializationTest {
 
 		when(response.getLocale()).thenReturn(new Locale("en", "US"));
 
-		this.serialization = new GsonSerialization(response);
+		this.serialization = new GsonSerialization(response, new DefaultTypeNameExtractor());
 	}
 
 	public static class Address {
@@ -190,8 +191,8 @@ public class GsonJSONSerializationTest {
 
 	@Test
 	public void shouldSerializeEnumFields() {
-		Order order = new BasicOrder(new Client("guilherme silveira"), 15.0,
-				"pack it nicely, please", Type.basic);
+		Order order = new BasicOrder(new Client("guilherme silveira"), 15.0, "pack it nicely, please",
+				Type.basic);
 		serialization.from(order).serialize();
 		String result = result();
 		assertThat(result, containsString("\"type\":\"basic\""));
@@ -206,7 +207,6 @@ public class GsonJSONSerializationTest {
 		Order order = new Order(new Client("guilherme silveira"), 15.0, "pack it nicely, please");
 		serialization.from(Arrays.asList(order, order)).serialize();
 		assertThat(result(), is(equalTo(expectedResult)));
-
 	}
 
 	@Test
@@ -221,8 +221,8 @@ public class GsonJSONSerializationTest {
 
 	@Test
 	public void shouldExcludeNonPrimitiveFieldsFromACollection() {
-		Order order = new Order(new Client("guilherme silveira"), 15.0, "pack it nicely, please",
-				new Item("name", 12.99));
+		Order order = new Order(new Client("guilherme silveira"), 15.0, "pack it nicely, please", new Item(
+				"name", 12.99));
 		serialization.from(Arrays.asList(order, order), "orders").exclude("price").serialize();
 
 		assertThat(result(), not(containsString("\"items\"")));
@@ -279,8 +279,8 @@ public class GsonJSONSerializationTest {
 
 	@Test
 	public void shouldOptionallyIncludeFieldAndNotItsNonPrimitiveFields() {
-		Order order = new Order(new Client("guilherme silveira", new Address("R. Vergueiro")),
-				15.0, "pack it nicely, please");
+		Order order = new Order(new Client("guilherme silveira", new Address("R. Vergueiro")), 15.0,
+				"pack it nicely, please");
 		serialization.from(order).include("client").serialize();
 		assertThat(result(), containsString("\"name\":\"guilherme silveira\""));
 		assertThat(result(), not(containsString("R. Vergueiro")));
@@ -288,8 +288,8 @@ public class GsonJSONSerializationTest {
 
 	@Test
 	public void shouldOptionallyIncludeChildField() {
-		Order order = new Order(new Client("guilherme silveira", new Address("R. Vergueiro")),
-				15.0, "pack it nicely, please");
+		Order order = new Order(new Client("guilherme silveira", new Address("R. Vergueiro")), 15.0,
+				"pack it nicely, please");
 		serialization.from(order).include("client", "client.address").serialize();
 		assertThat(result(), containsString("\"street\":\"R. Vergueiro\""));
 	}
@@ -306,8 +306,8 @@ public class GsonJSONSerializationTest {
 
 	@Test
 	public void shouldOptionallyIncludeListChildFields() {
-		Order order = new Order(new Client("guilherme silveira"), 15.0, "pack it nicely, please",
-				new Item("any item", 12.99));
+		Order order = new Order(new Client("guilherme silveira"), 15.0, "pack it nicely, please", new Item(
+				"any item", 12.99));
 		serialization.from(order).include("items").serialize();
 		assertThat(result(), containsString("\"items\""));
 		assertThat(result(), containsString("\"name\":\"any item\""));
@@ -316,8 +316,8 @@ public class GsonJSONSerializationTest {
 
 	@Test
 	public void shouldOptionallyExcludeFieldsFromIncludedListChildFields() {
-		Order order = new Order(new Client("guilherme silveira"), 15.0, "pack it nicely, please",
-				new Item("any item", 12.99));
+		Order order = new Order(new Client("guilherme silveira"), 15.0, "pack it nicely, please", new Item(
+				"any item", 12.99));
 		serialization.from(order).include("items").exclude("items.price").serialize();
 		assertThat(result(), containsString("\"items\""));
 		assertThat(result(), containsString("\"name\":\"any item\""));
@@ -326,8 +326,8 @@ public class GsonJSONSerializationTest {
 
 	@Test
 	public void shouldOptionallyRemoveRoot() {
-		Order order = new Order(new Client("guilherme silveira"), 15.0, "pack it nicely, please",
-				new Item("any item", 12.99));
+		Order order = new Order(new Client("guilherme silveira"), 15.0, "pack it nicely, please", new Item(
+				"any item", 12.99));
 		serialization.withoutRoot().from(order).include("items").exclude("items.price").serialize();
 		assertThat(result(), containsString("\"items\""));
 		assertThat(result(), containsString("\"name\":\"any item\""));
@@ -338,8 +338,8 @@ public class GsonJSONSerializationTest {
 	@Test
 	public void shouldOptionallyRemoveRootIdented() {
 		String expected = "{\n  \"price\": 15.0,\n  \"items\": [\n    {\n      \"name\": \"any item\"\n    }\n  ],\n  \"comments\": \"pack it nicely, please\"\n}";
-		Order order = new Order(new Client("guilherme silveira"), 15.0, "pack it nicely, please",
-				new Item("any item", 12.99));
+		Order order = new Order(new Client("guilherme silveira"), 15.0, "pack it nicely, please", new Item(
+				"any item", 12.99));
 
 		serialization.indented().withoutRoot().from(order).include("items").exclude("items.price")
 				.serialize();
@@ -376,7 +376,6 @@ public class GsonJSONSerializationTest {
 
 	}
 
-	// TODO: Serializando proxy hibernate
 	@Test
 	public void shouldRunHibernateLazyInitialization() throws Exception {
 		String expected = "{\"client\":{\"name\":\"my name\",\"aField\":\"abc\"}}";

@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletResponse;
 
+import br.com.caelum.vraptor.interceptor.TypeNameExtractor;
 import br.com.caelum.vraptor.ioc.Component;
 import br.com.caelum.vraptor.serialization.JSONSerialization;
 import br.com.caelum.vraptor.serialization.NoRootSerialization;
@@ -20,8 +21,11 @@ public class GsonSerialization implements JSONSerialization {
 
 	private boolean indented;
 
-	public GsonSerialization(HttpServletResponse response) {
+	private TypeNameExtractor extractor;
+
+	public GsonSerialization(HttpServletResponse response, TypeNameExtractor extractor) {
 		this.response = response;
+		this.extractor = extractor;
 		this.withoutRoot = false;
 	}
 
@@ -55,7 +59,8 @@ public class GsonSerialization implements JSONSerialization {
 
 	protected SerializerBuilder getSerializer() {
 		try {
-			return new GsonSerializer(response.getWriter(), indented, withoutRoot, response.getLocale());
+			return new GsonSerializer(response.getWriter(), indented, withoutRoot, extractor,
+					response.getLocale());
 		} catch (IOException e) {
 			throw new ResultException("Unable to serialize data", e);
 		}

@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import net.vidageek.mirror.dsl.Mirror;
+import br.com.caelum.vraptor.interceptor.TypeNameExtractor;
 import br.com.caelum.vraptor.serialization.Serializer;
 import br.com.caelum.vraptor.serialization.SerializerBuilder;
 import br.com.caelum.vraptor.view.ResultException;
@@ -41,8 +42,13 @@ public class GsonSerializer implements SerializerBuilder {
 
 	private boolean withoutRoot = false;
 
-	public GsonSerializer(Writer writer, boolean indented, boolean withoutRoot, Locale locale) {
+	private TypeNameExtractor extractor;
+
+	public GsonSerializer(Writer writer, boolean indented, boolean withoutRoot, TypeNameExtractor extractor,
+			Locale locale) {
 		this.writer = writer;
+		this.extractor = extractor;
+
 		this.treeFields = new NamedTreeNode(null, null);
 
 		String pattern = ((SimpleDateFormat) DateFormat.getDateInstance(DateFormat.MEDIUM, locale))
@@ -72,16 +78,6 @@ public class GsonSerializer implements SerializerBuilder {
 		}
 
 		return obj.getClass();
-	}
-
-	private static String getFieldName(Class<?> type) {
-		String fieldName = type.getSimpleName();
-		if (fieldName == null || "".equals(fieldName)) {
-			return null;
-		}
-		fieldName = Character.toLowerCase(fieldName.charAt(0)) + fieldName.substring(1);
-
-		return fieldName;
 	}
 
 	private static boolean isPrimitive(Class<?> type) {
@@ -299,7 +295,7 @@ public class GsonSerializer implements SerializerBuilder {
 
 			if (alias == null) {
 				Class<?> type = getTypeOf(object);
-				String name = getFieldName(type);
+				String name = extractor.nameFor(type);
 
 				if (isCollection(object.getClass())) {
 					name = "list";
@@ -327,5 +323,3 @@ public class GsonSerializer implements SerializerBuilder {
 		return this;
 	}
 }
-
-// TODO quando serializo collections ele ignora o withouroot

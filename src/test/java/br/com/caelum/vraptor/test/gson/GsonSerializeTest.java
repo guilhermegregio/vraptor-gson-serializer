@@ -23,6 +23,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.junit.Before;
 import org.junit.Test;
 
+import br.com.caelum.vraptor.interceptor.DefaultTypeNameExtractor;
 import br.com.caelum.vraptor.serialization.gson.GsonSerialization;
 import br.com.caelum.vraptor.test.model.gson.Address;
 import br.com.caelum.vraptor.test.model.gson.Customer;
@@ -52,7 +53,7 @@ public class GsonSerializeTest {
 		when(response.getWriter()).thenReturn(new PrintWriter(output));
 		when(response.getLocale()).thenReturn(new Locale("pt", "BR"));
 
-		this.gsonSerialization = new GsonSerialization(response);
+		this.gsonSerialization = new GsonSerialization(response, new DefaultTypeNameExtractor());
 		this.currentDate = new Date();
 		this.currentDateAsStr = sdf.format(currentDate);
 	}
