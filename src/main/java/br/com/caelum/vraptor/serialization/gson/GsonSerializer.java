@@ -20,6 +20,7 @@ import java.util.Map.Entry;
 
 import net.vidageek.mirror.dsl.Mirror;
 import br.com.caelum.vraptor.interceptor.TypeNameExtractor;
+import br.com.caelum.vraptor.serialization.ProxyInitializer;
 import br.com.caelum.vraptor.serialization.Serializer;
 import br.com.caelum.vraptor.serialization.SerializerBuilder;
 import br.com.caelum.vraptor.view.ResultException;
@@ -44,10 +45,13 @@ public class GsonSerializer implements SerializerBuilder {
 
 	private TypeNameExtractor extractor;
 
+	private ProxyInitializer initializer;
+
 	public GsonSerializer(Writer writer, boolean indented, boolean withoutRoot, TypeNameExtractor extractor,
-			Locale locale) {
+			ProxyInitializer initializer, Locale locale) {
 		this.writer = writer;
 		this.extractor = extractor;
+		this.initializer = initializer;
 
 		this.treeFields = new NamedTreeNode(null, null);
 
@@ -294,11 +298,17 @@ public class GsonSerializer implements SerializerBuilder {
 		if (object != null) {
 
 			if (alias == null) {
-				Class<?> type = getTypeOf(object);
-				String name = extractor.nameFor(type);
+				String name = null;
 
-				if (isCollection(object.getClass())) {
-					name = "list";
+				if (initializer.isProxy(object.getClass())) {
+					name = extractor.nameFor(initializer.getActualClass(object));
+				} else {
+					Class<?> type = getTypeOf(object);
+					name = extractor.nameFor(type);
+
+					if (isCollection(object.getClass())) {
+						name = "list";
+					}
 				}
 
 				treeFields.setName(name);

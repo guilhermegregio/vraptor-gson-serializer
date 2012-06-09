@@ -26,6 +26,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import br.com.caelum.vraptor.interceptor.DefaultTypeNameExtractor;
+import br.com.caelum.vraptor.serialization.HibernateProxyInitializer;
 import br.com.caelum.vraptor.serialization.gson.GsonSerialization;
 
 import com.google.common.collect.ForwardingCollection;
@@ -48,7 +49,8 @@ public class GsonJSONSerializationTest {
 
 		when(response.getLocale()).thenReturn(new Locale("en", "US"));
 
-		this.serialization = new GsonSerialization(response, new DefaultTypeNameExtractor());
+		this.serialization = new GsonSerialization(response, new DefaultTypeNameExtractor(),
+				new HibernateProxyInitializer());
 	}
 
 	public static class Address {
