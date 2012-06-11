@@ -210,6 +210,18 @@ public class GsonJSONSerializationTest {
 		serialization.from(Arrays.asList(order, order)).serialize();
 		assertThat(result(), is(equalTo(expectedResult)));
 	}
+	
+	
+	@Test
+	public void shouldSerializeCollectionWithoutRoot() {
+		String expectedResult = "{\"price\":15.0,\"comments\":\"pack it nicely, please\"}";
+		expectedResult += "," + expectedResult;
+		expectedResult = "[" + expectedResult + "]";
+
+		Order order = new Order(new Client("guilherme silveira"), 15.0, "pack it nicely, please");
+		serialization.withoutRoot().from(Arrays.asList(order, order)).serialize();
+		assertThat(result(), is(equalTo(expectedResult)));
+	}
 
 	@Test
 	public void shouldSerializeCollectionWithPrefixTag() {
@@ -354,7 +366,7 @@ public class GsonJSONSerializationTest {
 
 	public static class SomeProxy extends Client implements HibernateProxy {
 		private static final long serialVersionUID = 1L;
-
+		
 		private String aField;
 
 		private transient LazyInitializer initializer;

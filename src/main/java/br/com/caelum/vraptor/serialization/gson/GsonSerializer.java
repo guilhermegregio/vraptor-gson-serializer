@@ -85,10 +85,9 @@ public class GsonSerializer implements SerializerBuilder {
 	}
 
 	private static boolean isPrimitive(Class<?> type) {
-		return type.isPrimitive() || type.isEnum() || Number.class.isAssignableFrom(type)
-				|| type.equals(String.class) || Date.class.isAssignableFrom(type)
-				|| Calendar.class.isAssignableFrom(type) || Boolean.class.equals(type)
-				|| Character.class.equals(type) || Map.class.isAssignableFrom(type)
+		return type.isPrimitive() || type.isEnum() || Number.class.isAssignableFrom(type) || type.equals(String.class)
+				|| Date.class.isAssignableFrom(type) || Calendar.class.isAssignableFrom(type)
+				|| Boolean.class.equals(type) || Character.class.equals(type) || Map.class.isAssignableFrom(type)
 				|| Object.class.equals(type) || (type.isArray() && type.getComponentType().equals(Byte.TYPE));
 	}
 
@@ -146,13 +145,7 @@ public class GsonSerializer implements SerializerBuilder {
 			}
 			if (value != null) {
 				try {
-					// Pegando atributo independente se o mesmo é publico ou
-					// privado.
 					lastValue = new Mirror().on(lastValue).get().field(lastField.getName());
-
-					// lastValue = new
-					// Mirror().on(lastValue).invoke().getterFor(lastField.getName());
-
 				} catch (Exception e) {
 					throw new ResultException("Unable to retrieve the value of field: " + fieldName, e);
 				}
@@ -232,9 +225,16 @@ public class GsonSerializer implements SerializerBuilder {
 				} else {
 					rootNode.put(treeFields.getName(), object);
 				}
+				toJson(rootNode);
 			} else if (Collection.class.isAssignableFrom(object.getClass()) && !isPrimitive(rootClass)) {
 				Collection<Object> collection = (Collection<Object>) object;
-				rootNode.put(treeFields.getName(), serializeCollection(treeFields, collection));
+
+				if (withoutRoot) {
+					toJson(serializeCollection(treeFields, collection));
+				} else {
+					rootNode.put(treeFields.getName(), serializeCollection(treeFields, collection));
+					toJson(rootNode);
+				}
 			} else if (!isPrimitive(rootClass)) {
 				if (withoutRoot) {
 					serialize(rootNode, treeFields, object);
@@ -243,22 +243,28 @@ public class GsonSerializer implements SerializerBuilder {
 					temp.put(treeFields.getName(), serialize(rootNode, treeFields, object));
 					rootNode = temp;
 				}
+				toJson(rootNode);
 			} else {
 				if (withoutRoot) {
 					rootNode.put("", object);
 				} else {
 					rootNode.put(treeFields.getName(), object);
 				}
+				toJson(rootNode);
 			}
 		} else {
 			if (treeFields.getName() != null) {
 				Map<String, Object> novoNode = new HashMap<String, Object>();
 				rootNode.put(treeFields.getName(), novoNode);
 			}
-		}
 
+			toJson(rootNode);
+		}
+	}
+
+	private void toJson(Object object) {
 		try {
-			writer.write(gsonBuilder.create().toJson(rootNode));
+			writer.write(gsonBuilder.create().toJson(object));
 			writer.flush();
 			writer.close();
 		} catch (Exception e) {
