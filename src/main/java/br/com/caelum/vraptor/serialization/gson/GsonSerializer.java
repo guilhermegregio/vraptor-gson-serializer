@@ -221,11 +221,11 @@ public class GsonSerializer implements SerializerBuilder {
 		if (object != null) {
 			if (recursive) {
 				if (withoutRoot) {
-					rootNode.put(null, object);
+					toJson(object);
 				} else {
 					rootNode.put(treeFields.getName(), object);
+					toJson(rootNode);
 				}
-				toJson(rootNode);
 			} else if (Collection.class.isAssignableFrom(object.getClass()) && !isPrimitive(rootClass)) {
 				Collection<Object> collection = (Collection<Object>) object;
 
