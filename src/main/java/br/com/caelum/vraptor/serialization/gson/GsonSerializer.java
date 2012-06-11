@@ -304,23 +304,19 @@ public class GsonSerializer implements SerializerBuilder {
 		if (object != null) {
 
 			if (alias == null) {
-				String name = null;
-
 				if (initializer.isProxy(object.getClass())) {
-					name = extractor.nameFor(initializer.getActualClass(object));
+					alias = extractor.nameFor(initializer.getActualClass(object));
 				} else {
 					Class<?> type = getTypeOf(object);
-					name = extractor.nameFor(type);
+					alias = extractor.nameFor(type);
 
 					if (isCollection(object.getClass())) {
-						name = "list";
+						alias = "list";
 					}
 				}
-
-				treeFields.setName(name);
-			} else {
-				treeFields.setName(alias);
 			}
+			
+			treeFields.setName(alias);
 
 			rootClass = getTypeOf(object);
 
